@@ -8,6 +8,9 @@ jobs:
       matrix:
         arch: [i686, x86_64]
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       # fix line endings for cygwin bash
       - run: git config --global core.autocrlf input
