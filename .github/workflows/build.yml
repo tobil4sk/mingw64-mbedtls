@@ -20,9 +20,10 @@ jobs:
       - run: git config --global core.autocrlf input
       - uses: actions/checkout@v4
 
+      # run this before installing cygwin bash to avoid \r problems
       - run: |
-          version=$(cat mingw64-${{ matrix.arch }}.cygport | grep VERSION= | tr -d '\n')
-          release_number=$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE= | tr -d '\n')
+          version=$(cat mingw64-${{ matrix.arch }}.cygport | grep VERSION=)
+          release_number=$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE=)
           package_version=${version#*=}-${release_number#*=}
           echo $package_version
           echo PACKAGE_VERSION=$package_version >> $GITHUB_ENV
