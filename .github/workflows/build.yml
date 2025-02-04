@@ -18,7 +18,7 @@ jobs:
 
       - uses: cygwin/cygwin-install-action@v5
         with:
-          packages: cygport, cmake
+          packages: cygport, cmake, mingw64-${{ matrix.arch }}-binutils
 
       - run: cygport mingw64-${{ matrix.arch }}.cygport download
         name: download
