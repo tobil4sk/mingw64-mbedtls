@@ -20,18 +20,17 @@ jobs:
       - run: git config --global core.autocrlf input
       - uses: actions/checkout@v4
 
-      - uses: cygwin/cygwin-install-action@v5
-        with:
-          packages: mingw64-${{ matrix.arch }}-gcc-core, cygport, ${{ env.CYGWIN_DEPENDENCIES }}
-
       - run: |
-          set -o igncr
           version=$(cat mingw64-${{ matrix.arch }}.cygport | grep VERSION= | tr -d '\n')
           release_number=$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE= | tr -d '\n')
           package_version=${version#*=}-${release_number#*=}
           echo $package_version
           echo PACKAGE_VERSION=$package_version >> $GITHUB_ENV
         name: Export package version
+
+      - uses: cygwin/cygwin-install-action@v5
+        with:
+          packages: mingw64-${{ matrix.arch }}-gcc-core, cygport, ${{ env.CYGWIN_DEPENDENCIES }}
 
       - run: cygport mingw64-${{ matrix.arch }} download
         name: Download
