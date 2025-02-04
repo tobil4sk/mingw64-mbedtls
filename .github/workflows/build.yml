@@ -2,6 +2,9 @@ name: Build
 on:
   [push, pull_request]
 
+env:
+  PACKAGE: mbedtls
+
 jobs:
   build:
     strategy:
@@ -20,8 +23,13 @@ jobs:
         with:
           packages: mingw64-${{ matrix.arch }}-gcc-core, cygport, cmake
 
-      - run: echo "$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE)" >> $GITHUB_ENV
-        name: Export release number
+      - run: |
+          version=$(cat mingw64-${{ matrix.arch }}.cygport | grep VERSION)
+          release_number=$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE)
+          package_version=${version#*=}-${release_number#*=}
+          echo $package_version
+          echo PACKAGE_VERSION=$package_version >> $GITHUB_ENV
+        name: Export package version
 
       - run: cygport mingw64-${{ matrix.arch }} download
         name: Download
@@ -29,9 +37,11 @@ jobs:
         name: Build
 
       - uses: actions/upload-artifact@v4
+        env:
+          DIST_DIR: mingw64-${{ matrix.arch }}-${{ env.PACKAGE }}-${{ env.PACKAGE_VERSION }}.noarch/dist/mingw64-${{ matrix.arch }}-${{ env.PACKAGE }}
         with:
-          # avoid matching -src.tar.xz
-          path: mingw64-${{ matrix.arch }}-mbedtls-*.noarch/dist/mingw64-${{ matrix.arch }}-mbedtls/*-${{ env.RELEASE }}.tar.xz
+          path: ${{ env.DIST_DIR }}/mingw64-${{ matrix.arch }}-${{ env.PACKAGE }}-${{ env.PACKAGE_VERSION }}.tar.xz
+          name: mingw64-${{ matrix.arch }}-${{ env.PACKAGE }}-${{ env.PACKAGE_VERSION }}.tar.xz
 
   release:
     needs: build
