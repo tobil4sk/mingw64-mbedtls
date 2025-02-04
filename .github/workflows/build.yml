@@ -24,8 +24,8 @@ jobs:
           packages: mingw64-${{ matrix.arch }}-gcc-core, cygport, cmake
 
       - run: |
-          version=$(cat mingw64-${{ matrix.arch }}.cygport | grep VERSION)
-          release_number=$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE)
+          version=$(cat mingw64-${{ matrix.arch }}.cygport | grep VERSION=)
+          release_number=$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE=)
           package_version=${version#*=}-${release_number#*=}
           echo $package_version
           echo PACKAGE_VERSION=$package_version >> $GITHUB_ENV
