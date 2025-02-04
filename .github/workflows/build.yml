@@ -43,7 +43,7 @@ jobs:
           DIST_DIR: mingw64-${{ matrix.arch }}-${{ env.PACKAGE }}-${{ env.PACKAGE_VERSION }}.noarch/dist/mingw64-${{ matrix.arch }}-${{ env.PACKAGE }}
         with:
           path: ${{ env.DIST_DIR }}/mingw64-${{ matrix.arch }}-${{ env.PACKAGE }}-${{ env.PACKAGE_VERSION }}.tar.xz
-          name: mingw64-${{ matrix.arch }}-${{ env.PACKAGE }}-${{ env.PACKAGE_VERSION }}.tar.xz
+          name: artifact-${{ matrix.arch }}
 
   release:
     needs: build
@@ -57,6 +57,6 @@ jobs:
           gh release create ${{ github.ref_name }} \
             --verify-tag \
             --title ${{ github.ref_name }} \
-            *.tar.xz
+            artifact-*/*.tar.xz
         env:
           GITHUB_TOKEN: ${{ github.token }}
