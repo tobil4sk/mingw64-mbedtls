@@ -25,6 +25,7 @@ jobs:
           packages: mingw64-${{ matrix.arch }}-gcc-core, cygport, ${{ env.CYGWIN_DEPENDENCIES }}
 
       - run: |
+          set -o igncr
           version=$(cat mingw64-${{ matrix.arch }}.cygport | grep VERSION= | tr -d '\n')
           release_number=$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE= | tr -d '\n')
           package_version=${version#*=}-${release_number#*=}
