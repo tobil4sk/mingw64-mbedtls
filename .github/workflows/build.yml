@@ -20,14 +20,18 @@ jobs:
         with:
           packages: mingw64-${{ matrix.arch }}-gcc-core, cygport, cmake
 
-      - run: cygport mingw64-${{ matrix.arch }}.cygport download
-        name: download
-      - run: cygport mingw64-${{ matrix.arch }}.cygport all
-        name: build
+      - run: echo "$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE)" >> $GITHUB_ENV
+        name: Export release number
+
+      - run: cygport mingw64-${{ matrix.arch }} download
+        name: Download
+      - run: cygport mingw64-${{ matrix.arch }} all
+        name: Build
 
       - uses: actions/upload-artifact@v4
         with:
-          path: mingw64-${{ matrix.arch }}-mbedtls-*.noarch/dist/mingw64-${{ matrix.arch }}-mbedtls/*.tar.xz
+          # avoid matching -src.tar.xz
+          path: mingw64-${{ matrix.arch }}-mbedtls-*.noarch/dist/mingw64-${{ matrix.arch }}-mbedtls/*-${{ env.RELEASE }}.tar.xz
 
   release:
     needs: build
