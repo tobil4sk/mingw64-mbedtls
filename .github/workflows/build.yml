@@ -4,6 +4,7 @@ on:
 
 env:
   PACKAGE: mbedtls
+  CYGWIN_DEPENDENCIES: cmake
 
 jobs:
   build:
@@ -21,11 +22,11 @@ jobs:
 
       - uses: cygwin/cygwin-install-action@v5
         with:
-          packages: mingw64-${{ matrix.arch }}-gcc-core, cygport, cmake
+          packages: mingw64-${{ matrix.arch }}-gcc-core, cygport, ${{ env.CYGWIN_DEPENDENCIES }}
 
       - run: |
-          version=$(cat mingw64-${{ matrix.arch }}.cygport | grep VERSION=)
-          release_number=$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE=)
+          version=$(cat mingw64-${{ matrix.arch }}.cygport | grep VERSION= | tr -d '\n')
+          release_number=$(cat mingw64-${{ matrix.arch }}.cygport | grep RELEASE= | tr -d '\n')
           package_version=${version#*=}-${release_number#*=}
           echo $package_version
           echo PACKAGE_VERSION=$package_version >> $GITHUB_ENV
@@ -48,5 +49,12 @@ jobs:
     # if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
-    - name: "Get: all build artifacts"
-      uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v4
+
+    - run: |
+        gh release create ${{ github.ref_name }} \
+          --verify-tag \
+          --title ${{ github.ref_name }} \
+          *.tar.xz
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
