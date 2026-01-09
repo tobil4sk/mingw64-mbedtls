@@ -1,6 +1,7 @@
 name: CI
 on:
   push:
+    branches: ['*']
     tags-ignore: ['*'] # handle as a release instead
   pull_request:
   release:
