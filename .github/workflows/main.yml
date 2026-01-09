@@ -60,9 +60,7 @@ jobs:
 
       - run: |
           gh release upload ${{ github.ref_name }} \
-            --verify-tag \
             --clobber \
-            --title ${{ github.ref_name }} \
             artifact-*/*.tar.xz
         env:
           GITHUB_TOKEN: ${{ github.token }}
