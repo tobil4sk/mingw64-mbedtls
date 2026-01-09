@@ -1,6 +1,10 @@
 name: CI
 on:
-  [push, pull_request]
+  push:
+    tags-ignore: ['*'] # handle as a release instead
+  pull_request:
+  release:
+    types: published
 
 env:
   PACKAGE: mbedtls
@@ -48,15 +52,16 @@ jobs:
 
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    if: ${{ github.event_name == 'release' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7
 
       - run: |
-          gh release create ${{ github.ref_name }} \
+          gh release upload ${{ github.ref_name }} \
             --verify-tag \
+            --clobber \
             --title ${{ github.ref_name }} \
             artifact-*/*.tar.xz
         env:
